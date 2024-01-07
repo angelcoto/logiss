@@ -16,7 +16,7 @@ func main() {
 	ahora := time.Now().UTC()
 	fDefault := ahora.Format("060102")
 
-	fechaPtr := flag.String("f", fDefault, "Fecha del primer log a cargar (formato 'aammdd')")
+	fechaPtr := flag.String("f", fDefault, "Fecha del primer log a cargar en formato 'aammdd'")
 	maxDiasPtr := flag.Int("l", 0, "Límite de fechas a procesar")
 
 	flag.Parse()
@@ -27,7 +27,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	fmt.Println(*fechaPtr)
+	if *fechaPtr == fDefault {
+		*maxDiasPtr = 0
+	}
 
 	rangoArchivos := genRangoArchivos(*fechaPtr, *maxDiasPtr)
 	fmt.Printf("%v\n", rangoArchivos)
