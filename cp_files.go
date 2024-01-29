@@ -13,8 +13,10 @@ func cpArchivos(dirOrigen string, dirDestino string, archivos rangeFile) {
 		bWritten, err := cpFile(fDes, fOri)
 		if err != nil {
 			printError(err)
+		} else {
+			fmt.Println("Copiado ", fDes, " ", bWritten)
+
 		}
 
-		fmt.Println("Copiado ", fDes, " ", bWritten)
 	}
 }
