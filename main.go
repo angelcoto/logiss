@@ -1,10 +1,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
-	"time"
 )
 
 func printError(err error) {
@@ -13,24 +11,14 @@ func printError(err error) {
 
 func main() {
 
-	ahora := time.Now().UTC()
-	fDefault := ahora.Format("060102")
-
-	fechaPtr := flag.String("f", fDefault, "Fecha del primer log a cargar en formato 'aammdd'")
-	maxDiasPtr := flag.Int("l", 0, "Límite de fechas a procesar")
-
-	flag.Parse()
-
-	err := validaFecha(*fechaPtr)
+	// Carga parámetros de funcionamiento
+	dirs, fecha, maxDias, err := loadParms()
 	if err != nil {
 		printError(err)
 		os.Exit(0)
 	}
 
-	if *fechaPtr == fDefault {
-		*maxDiasPtr = 0
-	}
+	rangoArchivos := genRangoArchivos(fecha, maxDias)
 
-	rangoArchivos := genRangoArchivos(*fechaPtr, *maxDiasPtr)
-	fmt.Printf("%v\n", rangoArchivos)
+	cpArchivos(dirs.origen, dirs.tmp, rangoArchivos)
 }
