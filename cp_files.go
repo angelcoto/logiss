@@ -6,6 +6,7 @@ import (
 )
 
 func cpArchivos(dirOrigen string, dirDestino string, archivos rangeFile) {
+	fmt.Println("Etapa 1: transferencia de logs desde", dirOrigen)
 	for _, archivo := range archivos {
 		fOri := filepath.Join(dirOrigen, archivo)
 		fDes := filepath.Join(dirDestino, archivo)
@@ -14,7 +15,7 @@ func cpArchivos(dirOrigen string, dirDestino string, archivos rangeFile) {
 		if err != nil {
 			printError(err)
 		} else {
-			fmt.Println("Copiado ", fDes, " ", bWritten)
+			fmt.Println("Transferido:", fDes, "-", bWritten)
 
 		}
 
