@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 	"time"
 )
@@ -23,8 +24,7 @@ type rec struct {
 
 type log []rec
 
-func csvLog(entradas log) error {
-	csv := "360.csv"
+func csvLog(entradas log, csv string) error {
 
 	// Abre el archivo en modo append (agregar)
 	archivo, err := os.OpenFile(csv, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
@@ -38,6 +38,11 @@ func csvLog(entradas log) error {
 	writer := bufio.NewWriter(archivo)
 
 	for _, entrada := range entradas {
+		// En el arvhivo CSV no se graban las lineas que no tienen usuario
+		if entrada.usuario == "-" {
+			continue
+		}
+
 		linea := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
 			entrada.fechaOri,
 			entrada.fechaLoc,
@@ -49,17 +54,19 @@ func csvLog(entradas log) error {
 			entrada.referer,
 			entrada.status,
 			entrada.tiempo)
+
 		_, err := writer.WriteString(linea)
 		if err != nil {
 			return err
 		}
 	}
+
 	writer.Flush()
 	fmt.Println("Se insertaron", len(entradas), "lineas")
 	return nil
 }
 
-func procArchivo(archivo string) error {
+func procArchivo(archivo, csvPath string) error {
 
 	fmt.Println("Procesando archivo", archivo)
 
@@ -84,6 +91,11 @@ func procArchivo(archivo string) error {
 			continue
 		}
 
+		exclusiones := []string{"/bundles/modernizr", "/Content/css", "/bundles/jquery", "/bundles/bootstrap"}
+		if slices.Contains(exclusiones, lineaPartida[4]) {
+			continue
+		}
+
 		// fecha_ori
 		linea.fechaOri = lineaPartida[0] + " " + lineaPartida[1]
 
@@ -104,7 +116,7 @@ func procArchivo(archivo string) error {
 		// puerto
 		linea.puerto = lineaPartida[6]
 
-		// usuario
+		// usuariols -
 		linea.usuario = lineaPartida[7]
 
 		// ip_c
@@ -120,10 +132,9 @@ func procArchivo(archivo string) error {
 		linea.tiempo = lineaPartida[14]
 
 		lineasLog = append(lineasLog, linea)
-
 	}
 
-	err = csvLog(lineasLog)
+	err = csvLog(lineasLog, csvPath)
 	if err != nil {
 		return err
 	}
@@ -131,12 +142,12 @@ func procArchivo(archivo string) error {
 	return nil
 }
 
-func procArchivos(archivos rangeFile) {
+func procArchivos(archivos rangeFile, csvPath string) {
 	fmt.Printf("\n* ETAPA 2: procesamiento de archivos en directorio temporal\n")
 
 	for _, archivo := range archivos {
 		fmt.Println(archivo)
-		err := procArchivo(archivo)
+		err := procArchivo(archivo, csvPath)
 		if err != nil {
 			printError(err)
 		}
