@@ -13,7 +13,7 @@ func printError(err error) {
 func main() {
 
 	// Carga parámetros de funcionamiento
-	dirs, fecha, maxDias, err := loadParms()
+	conf, fecha, maxDias, err := loadParms()
 	if err != nil {
 		printError(err)
 		os.Exit(0)
@@ -23,13 +23,13 @@ func main() {
 
 	rangoArchivos := genRangoArchivos(fecha, maxDias)
 
-	arcTransferidos, err := tranfArchivos(dirs.origen, dirs.tmp, rangoArchivos)
+	arcTransferidos, err := tranfArchivos(conf.origen, conf.tmp, rangoArchivos)
 	if err != nil {
 		printError(err)
 		os.Exit(0)
 	}
 
-	err = procArchivos(arcTransferidos, dirs.csvPath)
+	err = procArchivos(arcTransferidos, conf.csvPath, conf.exclUrsNull)
 	if err != nil {
 		printError(err)
 	}

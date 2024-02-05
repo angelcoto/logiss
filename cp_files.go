@@ -41,7 +41,7 @@ func tranfArchivos(dirOrigen string, dirDestino string, archivos rangeFile) (ran
 		if err != nil {
 			printError(err)
 		} else {
-			fmt.Println("Transferido:", fDes, "-", bWritten)
+			fmt.Println("Transferido:", fDes, "-", bWritten, "bytes")
 			arcCopiados = append(arcCopiados, fDes)
 
 		}

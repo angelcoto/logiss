@@ -24,7 +24,7 @@ type rec struct {
 
 type log []rec
 
-func csvLog(entradas log, csv string) (int, error) {
+func csvLog(entradas log, csv string, exclUsrNull bool) (int, error) {
 
 	// Abre el archivo en modo append (agregar)
 	archivo, err := os.OpenFile(csv, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
@@ -40,7 +40,7 @@ func csvLog(entradas log, csv string) (int, error) {
 	contador := 0
 	for _, entrada := range entradas {
 		// En el arvhivo CSV no se graban las lineas que no tienen usuario
-		if entrada.usuario == "-" {
+		if entrada.usuario == "-" && exclUsrNull {
 			continue
 		}
 
@@ -67,7 +67,7 @@ func csvLog(entradas log, csv string) (int, error) {
 	return contador, nil
 }
 
-func procArchivo(archivo, csvPath string) error {
+func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 
 	f, err := os.Open(archivo)
 	if err != nil {
@@ -133,16 +133,16 @@ func procArchivo(archivo, csvPath string) error {
 		lineasLog = append(lineasLog, linea)
 	}
 
-	lineasInsertadas, err := csvLog(lineasLog, csvPath)
+	lineasInsertadas, err := csvLog(lineasLog, csvPath, exclUsrNull)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Procesado:", archivo, "->", lineasInsertadas, "líneas insertadas en archivo CSV.")
+	fmt.Println("Procesado:", archivo, "-", lineasInsertadas, "líneas en archivo CSV.")
 	return nil
 }
 
-func procArchivos(archivos rangeFile, csvPath string) error {
+func procArchivos(archivos rangeFile, csvPath string, exclUsrNull bool) error {
 	fmt.Printf("\n* ETAPA 2: procesamiento de archivos en directorio temporal\n")
 
 	csvPathBk := csvPath + ".bak"
@@ -168,7 +168,7 @@ func procArchivos(archivos rangeFile, csvPath string) error {
 
 	// Procesa todos los archivos transferidos
 	for _, archivo := range archivos {
-		err := procArchivo(archivo, csvPath)
+		err := procArchivo(archivo, csvPath, exclUsrNull)
 		if err != nil {
 			printError(err)
 		}

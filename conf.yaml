@@ -1,0 +1,8 @@
+dirs:
+  origen: 
+  tmp: 
+  archive: 
+  csv_path: 
+
+mode:
+  excluir_usuarios_nulos: true

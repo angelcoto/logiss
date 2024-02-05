@@ -8,10 +8,11 @@ import (
 )
 
 type cfg struct {
-	origen  string
-	tmp     string
-	archive string
-	csvPath string
+	origen      string
+	tmp         string
+	archive     string
+	csvPath     string
+	exclUrsNull bool
 }
 
 func (c *cfg) loadCfg(cfgFile string) error {
@@ -27,7 +28,8 @@ func (c *cfg) loadCfg(cfgFile string) error {
 	c.origen = viper.GetString("dirs.origen")
 	c.tmp = viper.GetString("dirs.tmp")
 	c.archive = viper.GetString("dirs.archive")
-	c.csvPath = viper.GetString("dirs.csvPath")
+	c.csvPath = viper.GetString("dirs.csv_path")
+	c.exclUrsNull = viper.GetBool("mode.excluir_usuarios_nulos")
 
 	return nil
 
