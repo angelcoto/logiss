@@ -24,19 +24,20 @@ type rec struct {
 
 type log []rec
 
-func csvLog(entradas log, csv string) error {
+func csvLog(entradas log, csv string) (int, error) {
 
 	// Abre el archivo en modo append (agregar)
 	archivo, err := os.OpenFile(csv, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		fmt.Println("Error al abrir el archivo:", err)
-		return err
+		return 0, err
 	}
 	defer archivo.Close()
 
 	// Crea un escritor que apunta al archivo
 	writer := bufio.NewWriter(archivo)
 
+	contador := 0
 	for _, entrada := range entradas {
 		// En el arvhivo CSV no se graban las lineas que no tienen usuario
 		if entrada.usuario == "-" {
@@ -57,18 +58,16 @@ func csvLog(entradas log, csv string) error {
 
 		_, err := writer.WriteString(linea)
 		if err != nil {
-			return err
+			return 0, err
 		}
+		contador++
 	}
 
 	writer.Flush()
-	fmt.Println("Se insertaron", len(entradas), "lineas")
-	return nil
+	return contador, nil
 }
 
 func procArchivo(archivo, csvPath string) error {
-
-	fmt.Println("Procesando archivo", archivo)
 
 	f, err := os.Open(archivo)
 	if err != nil {
@@ -134,22 +133,46 @@ func procArchivo(archivo, csvPath string) error {
 		lineasLog = append(lineasLog, linea)
 	}
 
-	err = csvLog(lineasLog, csvPath)
+	lineasInsertadas, err := csvLog(lineasLog, csvPath)
 	if err != nil {
 		return err
 	}
 
+	fmt.Println("Procesado:", archivo, "->", lineasInsertadas, "líneas insertadas en archivo CSV.")
 	return nil
 }
 
-func procArchivos(archivos rangeFile, csvPath string) {
+func procArchivos(archivos rangeFile, csvPath string) error {
 	fmt.Printf("\n* ETAPA 2: procesamiento de archivos en directorio temporal\n")
 
+	csvPathBk := csvPath + ".bak"
+	err := os.Rename(csvPath, csvPathBk)
+	if err != nil {
+		printError(err)
+	}
+
+	// Abre el archivo csv para agregar el encabezado
+	archivo, err := os.OpenFile(csvPath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+
+	// Escribe el encabezado
+	encabezado := "fecha_ori,fecha,metodo,uri_stem,puerto,usuario,ip_c,referer,status,tiempo"
+	_, err = archivo.WriteString(encabezado + "\n")
+	if err != nil {
+		archivo.Close()
+		return err
+	}
+	archivo.Close()
+
+	// Procesa todos los archivos transferidos
 	for _, archivo := range archivos {
-		fmt.Println(archivo)
 		err := procArchivo(archivo, csvPath)
 		if err != nil {
 			printError(err)
 		}
 	}
+
+	return nil
 }

@@ -29,7 +29,10 @@ func main() {
 		os.Exit(0)
 	}
 
-	procArchivos(arcTransferidos, dirs.csvPath)
+	err = procArchivos(arcTransferidos, dirs.csvPath)
+	if err != nil {
+		printError(err)
+	}
 
 	fmt.Printf("\nFIN DE PROCESO: %v\n", time.Since(inicio))
 
