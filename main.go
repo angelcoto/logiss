@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 )
 
 func printError(err error) {
@@ -18,7 +19,18 @@ func main() {
 		os.Exit(0)
 	}
 
+	inicio := time.Now()
+
 	rangoArchivos := genRangoArchivos(fecha, maxDias)
 
-	cpArchivos(dirs.origen, dirs.tmp, rangoArchivos)
+	arcTransferidos, err := tranfArchivos(dirs.origen, dirs.tmp, rangoArchivos)
+	if err != nil {
+		printError(err)
+		os.Exit(0)
+	}
+
+	procArchivos(arcTransferidos)
+
+	fmt.Printf("\nFIN DE PROCESO: %v\n", time.Since(inicio))
+
 }
