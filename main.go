@@ -6,10 +6,6 @@ import (
 	"time"
 )
 
-func printError(err error) {
-	fmt.Println("* Error:", err)
-}
-
 func main() {
 
 	// Carga parámetros de funcionamiento

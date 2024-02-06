@@ -24,6 +24,9 @@ type rec struct {
 
 type log []rec
 
+// cvsLog agrega las entradas del archivo log al archivo csv.  Devuelve
+// la cantidad de líneas escritas y error en caso que no sea posible
+// escribir en el archivo.
 func csvLog(entradas log, csv string, exclUsrNull bool) (int, error) {
 
 	// Abre el archivo en modo append (agregar)
@@ -67,6 +70,11 @@ func csvLog(entradas log, csv string, exclUsrNull bool) (int, error) {
 	return contador, nil
 }
 
+// procArchivo revisa cada línea del archivo log para seleccionar
+// los campos de interés.  Se desestiman las líneas de comentario, así como
+// las líneas que contienen uri_stem declarados en lista de exclusión.
+// Se devuelve error en caso que no se pueda procesar el archivo.
+// (proc_files.go)
 func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 
 	f, err := os.Open(archivo)
@@ -142,6 +150,11 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 	return nil
 }
 
+// procArchivos invoca el procesamiento de cada uno de los archivos log listados
+// listados en la variable archivos.  Realiza una un backup del archivo csv y
+// coloca la línea de encabezado en el archivo.  Error es devuelto en caso que
+// el proceso no pueda realizarse.
+// (proc_files.go)
 func procArchivos(archivos rangeFile, csvPath string, exclUsrNull bool) error {
 	fmt.Printf("\n* ETAPA 2: procesamiento de archivos en directorio temporal\n")
 
