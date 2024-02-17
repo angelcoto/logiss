@@ -15,6 +15,8 @@ type cfg struct {
 	exclUrsNull bool
 }
 
+// loadCfg obtiene parámetros de configuración desde el archivo conf.yaml.
+// (load_parms.go)
 func (c *cfg) loadCfg(cfgFile string) error {
 	viper.SetConfigName("conf")
 	viper.SetConfigType("yaml")
@@ -32,9 +34,10 @@ func (c *cfg) loadCfg(cfgFile string) error {
 	c.exclUrsNull = viper.GetBool("mode.excluir_usuarios_nulos")
 
 	return nil
-
 }
 
+// loadParms obtiene parámetros de funcionamiento a través de flags de línea de comando.
+// (load_parms.go)
 func loadParms() (cfg, string, int, error) {
 	ahora := time.Now().UTC()
 	fDefault := ahora.Format("060102")
@@ -45,13 +48,12 @@ func loadParms() (cfg, string, int, error) {
 	flag.Parse()
 
 	var c cfg
-	err := c.loadCfg("conf.yaml")
-	if err != nil {
+
+	if err := c.loadCfg("conf.yaml"); err != nil {
 		return cfg{}, "", 0, err
 	}
 
-	err = validaFecha(*fechaPtr)
-	if err != nil {
+	if err := validaFecha(*fechaPtr); err != nil {
 		return cfg{}, "", 0, err
 	}
 
@@ -59,5 +61,5 @@ func loadParms() (cfg, string, int, error) {
 		*maxDiasPtr = 0
 	}
 
-	return c, *fechaPtr, *maxDiasPtr, err
+	return c, *fechaPtr, *maxDiasPtr, nil
 }

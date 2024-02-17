@@ -59,8 +59,8 @@ func csvLog(entradas log, csv string, exclUsrNull bool) (int, error) {
 			entrada.status,
 			entrada.tiempo)
 
-		_, err := writer.WriteString(linea)
-		if err != nil {
+		// Escribe línea en el buffer
+		if _, err := writer.WriteString(linea); err != nil {
 			return 0, err
 		}
 		contador++
@@ -159,8 +159,8 @@ func procArchivos(archivos rangeFile, csvPath string, exclUsrNull bool) error {
 	fmt.Printf("\n* ETAPA 2: procesamiento de archivos en directorio temporal\n")
 
 	csvPathBk := csvPath + ".bak"
-	err := os.Rename(csvPath, csvPathBk)
-	if err != nil {
+
+	if err := os.Rename(csvPath, csvPathBk); err != nil {
 		printError(err)
 	}
 
@@ -172,8 +172,7 @@ func procArchivos(archivos rangeFile, csvPath string, exclUsrNull bool) error {
 
 	// Escribe el encabezado
 	encabezado := "fecha_ori,fecha,metodo,uri_stem,puerto,usuario,ip_c,referer,status,tiempo"
-	_, err = archivo.WriteString(encabezado + "\n")
-	if err != nil {
+	if _, err := archivo.WriteString(encabezado + "\n"); err != nil {
 		archivo.Close()
 		return err
 	}
