@@ -19,7 +19,7 @@ func main() {
 
 	rangoArchivos := genRangoArchivos(fecha, maxDias)
 
-	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n", "v1.0.1")
+	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n", "v1.0.2")
 
 	arcTransferidos, err := tranfArchivos(conf.origen, conf.tmp, rangoArchivos)
 	if err != nil {

@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+// rec define la estructura de la línea de log que interesa generar.  No está
+// constituida por todas las líneas del log original, sino que solo las que se
+// consideran de interés.  En la estrucura se incorpora fechaLoc (fecha en hora
+// local), que no corresponde a ningún campo de log original.
+// (proc_files.go)
 type rec struct {
 	fechaOri string
 	fechaLoc string
@@ -22,12 +27,36 @@ type rec struct {
 	tiempo   string
 }
 
+// creaLinea es un método asociado al tipo rec, que procesa la línea del
+// log original (lineaPartida) para asignar los valores de todos los
+// campos de rec.
+// (proc_files.go)
+func (r *rec) creaLinea(lineaPartida []string) error {
+	// Selección de los campos que conforman la línea de log de salida
+	r.fechaOri = lineaPartida[0] + " " + lineaPartida[1]
+	fechaOri, err := time.Parse("2006-01-02 15:04:05", r.fechaOri)
+	if err != nil {
+		return err
+	}
+	r.fechaLoc = fechaOri.Local().Format("2006-01-02 15:04:05")
+	r.metodo = lineaPartida[3]
+	r.uriStem = lineaPartida[4]
+	r.puerto = lineaPartida[6]
+	r.usuario = lineaPartida[7]
+	r.ipC = lineaPartida[8]
+	r.referer = lineaPartida[10]
+	r.status = lineaPartida[11]
+	r.tiempo = lineaPartida[14]
+
+	return nil
+}
+
 type log []rec
 
-// cvsLog agrega las entradas del archivo log al archivo csv.  Devuelve
+// log2csv agrega las entradas del archivo log al archivo csv.  Devuelve
 // la cantidad de líneas escritas y error en caso que no sea posible
 // escribir en el archivo.
-func csvLog(entradas log, csv string, exclUsrNull bool) (int, error) {
+func (entradas log) log2csv(csv string, exclUsrNull bool) (int, error) {
 
 	// Abre el archivo en modo append (agregar)
 	archivo, err := os.OpenFile(csv, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
@@ -86,7 +115,7 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 	var linea rec
 	var lineaPartida []string
 	var contador int32
-	var lineasLog log
+	var logTransformado log
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -103,27 +132,16 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 			continue
 		}
 
-		// Selección de los campos que conforman la línea de log de salida
-		linea.fechaOri = lineaPartida[0] + " " + lineaPartida[1]
-		fechaOri, err := time.Parse("2006-01-02 15:04:05", linea.fechaOri)
-		if err != nil {
+		// se crea la línea de interés que será agregada al log de salida (logTransformado)
+		if err := linea.creaLinea(lineaPartida); err != nil {
 			fmt.Println(err, "en línea", contador)
 			continue
 		}
-		linea.fechaLoc = fechaOri.Local().Format("2006-01-02 15:04:05")
-		linea.metodo = lineaPartida[3]
-		linea.uriStem = lineaPartida[4]
-		linea.puerto = lineaPartida[6]
-		linea.usuario = lineaPartida[7]
-		linea.ipC = lineaPartida[8]
-		linea.referer = lineaPartida[10]
-		linea.status = lineaPartida[11]
-		linea.tiempo = lineaPartida[14]
 
-		lineasLog = append(lineasLog, linea)
+		logTransformado = append(logTransformado, linea)
 	}
 
-	lineasInsertadas, err := csvLog(lineasLog, csvPath, exclUsrNull)
+	lineasInsertadas, err := logTransformado.log2csv(csvPath, exclUsrNull)
 	if err != nil {
 		return err
 	}
