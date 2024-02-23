@@ -103,39 +103,21 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 			continue
 		}
 
-		// fecha_ori
+		// Selección de los campos que conforman la línea de log de salida
 		linea.fechaOri = lineaPartida[0] + " " + lineaPartida[1]
-
-		// fecha
 		fechaOri, err := time.Parse("2006-01-02 15:04:05", linea.fechaOri)
 		if err != nil {
 			fmt.Println(err, "en línea", contador)
 			continue
 		}
 		linea.fechaLoc = fechaOri.Local().Format("2006-01-02 15:04:05")
-
-		// metodo
 		linea.metodo = lineaPartida[3]
-
-		// uri_stem
 		linea.uriStem = lineaPartida[4]
-
-		// puerto
 		linea.puerto = lineaPartida[6]
-
-		// usuariols -
 		linea.usuario = lineaPartida[7]
-
-		// ip_c
 		linea.ipC = lineaPartida[8]
-
-		// referer
 		linea.referer = lineaPartida[10]
-
-		// status
 		linea.status = lineaPartida[11]
-
-		// tiempo
 		linea.tiempo = lineaPartida[14]
 
 		lineasLog = append(lineasLog, linea)
