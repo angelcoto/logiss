@@ -9,15 +9,14 @@ import (
 
 type cfg struct {
 	origen      string
-	tmp         string
-	archive     string
+	destino     string
 	csvPath     string
 	exclUrsNull bool
 }
 
 // loadCfg obtiene parámetros de configuración desde el archivo conf.yaml.
 // (load_parms.go)
-func (c *cfg) loadCfg(cfgFile string) error {
+func (c *cfg) loadCfg() error {
 	viper.SetConfigName("conf")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
@@ -28,8 +27,7 @@ func (c *cfg) loadCfg(cfgFile string) error {
 	}
 
 	c.origen = viper.GetString("dirs.origen")
-	c.tmp = viper.GetString("dirs.tmp")
-	c.archive = viper.GetString("dirs.archive")
+	c.destino = viper.GetString("dirs.destino")
 	c.csvPath = viper.GetString("dirs.csv_path")
 	c.exclUrsNull = viper.GetBool("mode.excluir_usuarios_nulos")
 
@@ -49,7 +47,7 @@ func loadParms() (cfg, string, int, error) {
 
 	var c cfg
 
-	if err := c.loadCfg("conf.yaml"); err != nil {
+	if err := c.loadCfg(); err != nil {
 		return cfg{}, "", 0, err
 	}
 

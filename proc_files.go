@@ -156,7 +156,7 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 // el proceso no pueda realizarse.
 // (proc_files.go)
 func procArchivos(archivos rangeFile, csvPath string, exclUsrNull bool) error {
-	fmt.Printf("\n* ETAPA 2: procesamiento de archivos en directorio temporal\n")
+	fmt.Printf("\n* ETAPA 2: procesando archivos en directorio cache\n")
 
 	csvPathBk := csvPath + ".bak"
 

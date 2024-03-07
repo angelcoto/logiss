@@ -1,7 +1,6 @@
 dirs:
   origen: 
-  tmp: 
-  archive: 
+  destino: 
   csv_path: 
 
 mode:

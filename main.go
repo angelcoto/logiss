@@ -19,16 +19,15 @@ func main() {
 
 	rangoArchivos := genRangoArchivos(fecha, maxDias)
 
-	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n", "v1.0.2")
+	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n", "v1.1.0")
 
-	arcTransferidos, err := tranfArchivos(conf.origen, conf.tmp, rangoArchivos)
+	archivos, err := tranfArchivos(conf.origen, conf.destino, rangoArchivos)
 	if err != nil {
 		printError(err)
 		os.Exit(0)
 	}
 
-	err = procArchivos(arcTransferidos, conf.csvPath, conf.exclUrsNull)
-	if err != nil {
+	if err := procArchivos(archivos, conf.csvPath, conf.exclUrsNull); err != nil {
 		printError(err)
 	}
 

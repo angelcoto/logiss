@@ -32,6 +32,25 @@ func validaFecha(sfecha string) error {
 
 }
 
+/*
+func borraTmp(tmp string) error {
+	err := filepath.Walk(tmp, func(ruta string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			err := os.Remove(ruta)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	return err
+}
+*/
+
 // cpFile copia el archivo oriFileName en destFileName, devolviendo
 // el número de bytes copiados y una variable de error.
 // (util.go)
@@ -56,4 +75,41 @@ func cpFile(destFileName string, oriFileName string) (int64, error) {
 	}
 
 	return bytesWritten, nil
+}
+
+// existeArchivo verifica si un archivo existe
+func existeArchivo(path string) bool {
+	info, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
+// tamanosIguales compara el tamaño de dos archivos y devuelve true en caso que los tamaños coincidan.
+func tamanosIguales(f1, f2 string) (bool, error) {
+	infoOri, err := os.Stat(f1)
+	if err != nil {
+		return false, err
+	}
+
+	infoDes, err := os.Stat(f2)
+	if err != nil {
+		return false, err
+	}
+
+	if infoOri.Size() == infoDes.Size() {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+// borraArchivo borra un archivo, devolviendo error en caso de falla
+func borraArchivo(ruta string) error {
+	err := os.Remove(ruta)
+	if err != nil {
+		return err
+	}
+	return nil
 }
