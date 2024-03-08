@@ -146,7 +146,7 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 		return err
 	}
 
-	logMensaje(fmt.Sprint("Procesado: ", archivo, " - ", lineasInsertadas, "líneas en archivo CSV."))
+	logMensaje(fmt.Sprint("Procesado: ", archivo, " - ", lineasInsertadas, " líneas en archivo CSV."))
 	return nil
 }
 

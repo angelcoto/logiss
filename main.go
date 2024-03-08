@@ -19,7 +19,7 @@ func main() {
 
 	rangoArchivos := genRangoArchivos(fecha, maxDias)
 
-	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n\n", "v1.1.1")
+	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n\n", "v1.1.2")
 
 	archivos, err := refreshCache(conf.origen, conf.destino, rangoArchivos)
 	if err != nil {
