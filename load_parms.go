@@ -35,13 +35,15 @@ func (c *cfg) loadCfg() error {
 }
 
 // loadParms obtiene parámetros de funcionamiento a través de flags de línea de comando.
+// Se hace llamado a loadCfg para obtener parámetros de funcionamiento
+// desde archivo de configuración "conf.yaml"
 // (load_parms.go)
 func loadParms() (cfg, string, int, error) {
 	ahora := time.Now().UTC()
 	fDefault := ahora.Format("060102")
 
-	fechaPtr := flag.String("f", fDefault, "Fecha del primer log a cargar en formato 'aammdd'")
-	maxDiasPtr := flag.Int("l", 0, "Límite de fechas a procesar")
+	fechaPtr := flag.String("f", fDefault, "Fecha del primer log a procesar (formato 'aammdd')")
+	maxDiasPtr := flag.Int("d", 0, "Cantidad de días a procesar desde la fecha definida")
 
 	flag.Parse()
 

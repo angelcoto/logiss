@@ -7,6 +7,7 @@ import (
 
 // refreshCache actualiza los archivos logs desde el directorio origen al directorio caché.
 // Solo se actualizan los archivos que han cambiado en el directorio origen.
+// (refresh_cache.go)
 func refreshCache(dirOrigen string, dirDestino string, archivos rangeFile) ([]string, error) {
 	logMensaje("Inicia actualización de directorio caché desde directorio origen")
 	var archivosListos []string

@@ -8,13 +8,14 @@ import (
 	"time"
 )
 
-// printError imprime en pantalla, en forma estandarizada, el mensaje de ero
-// r recibido como parámetro.
+// printError imprime mensajes de error en forma de log.
 // (util.go)
 func logError(err error) {
 	log.Println("Error:", err)
 }
 
+// logMensaje imprime mensajes informativos en forma de log
+// (util.go)
 func logMensaje(mensaje string) {
 	log.Println(mensaje)
 }
@@ -35,25 +36,6 @@ func validaFecha(sfecha string) error {
 	return err
 
 }
-
-/*
-func borraTmp(tmp string) error {
-	err := filepath.Walk(tmp, func(ruta string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if !info.IsDir() {
-			err := os.Remove(ruta)
-			if err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-
-	return err
-}
-*/
 
 // cpFile copia el archivo oriFileName en destFileName, devolviendo
 // el número de bytes copiados y una variable de error.
@@ -82,6 +64,7 @@ func cpFile(destFileName string, oriFileName string) (int64, error) {
 }
 
 // existeArchivo verifica si un archivo existe
+// (util.go)
 func existeArchivo(path string) bool {
 	info, err := os.Stat(path)
 	if os.IsNotExist(err) {
@@ -91,6 +74,7 @@ func existeArchivo(path string) bool {
 }
 
 // tamanosIguales compara el tamaño de dos archivos y devuelve true en caso que los tamaños coincidan.
+// (util.go)
 func tamanosIguales(f1, f2 string) (bool, error) {
 	infoOri, err := os.Stat(f1)
 	if err != nil {
@@ -109,7 +93,8 @@ func tamanosIguales(f1, f2 string) (bool, error) {
 	return false, nil
 }
 
-// borraArchivo borra un archivo, devolviendo error en caso de falla
+// borraArchivo borra un archivo, devolviendo error en caso de falla.
+// (util.go)
 func borraArchivo(ruta string) error {
 	err := os.Remove(ruta)
 	if err != nil {
