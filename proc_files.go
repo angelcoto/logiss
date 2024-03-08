@@ -51,17 +51,17 @@ func (r *rec) creaLinea(lineaPartida []string) error {
 	return nil
 }
 
-type log []rec
+type lineasLog []rec
 
 // log2csv agrega las entradas del archivo log al archivo csv.  Devuelve
 // la cantidad de líneas escritas y error en caso que no sea posible
 // escribir en el archivo.
-func (entradas log) log2csv(csv string, exclUsrNull bool) (int, error) {
+func (entradas lineasLog) log2csv(csv string, exclUsrNull bool) (int, error) {
 
 	// Abre el archivo en modo append (agregar)
 	archivo, err := os.OpenFile(csv, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
-		fmt.Println("Error al abrir el archivo:", err)
+		logError(err)
 		return 0, err
 	}
 	defer archivo.Close()
@@ -115,7 +115,7 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 	var linea rec
 	var lineaPartida []string
 	var contador int32
-	var logTransformado log
+	var logTransformado lineasLog
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -134,7 +134,7 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 
 		// se crea la línea de interés que será agregada al log de salida (logTransformado)
 		if err := linea.creaLinea(lineaPartida); err != nil {
-			fmt.Println(err, "en línea", contador)
+			logError(err)
 			continue
 		}
 
@@ -146,7 +146,7 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 		return err
 	}
 
-	fmt.Println("Procesado:", archivo, "-", lineasInsertadas, "líneas en archivo CSV.")
+	logMensaje(fmt.Sprint("Procesado: ", archivo, " - ", lineasInsertadas, "líneas en archivo CSV."))
 	return nil
 }
 
@@ -156,12 +156,12 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 // el proceso no pueda realizarse.
 // (proc_files.go)
 func procArchivos(archivos rangeFile, csvPath string, exclUsrNull bool) error {
-	fmt.Printf("\n* ETAPA 2: procesando archivos en directorio cache\n")
+	logMensaje("Inicia procesamiento de archivos en directorio cache")
 
 	csvPathBk := csvPath + ".bak"
 
 	if err := os.Rename(csvPath, csvPathBk); err != nil {
-		printError(err)
+		logError(err)
 	}
 
 	// Abre el archivo csv para agregar el encabezado
@@ -182,7 +182,7 @@ func procArchivos(archivos rangeFile, csvPath string, exclUsrNull bool) error {
 	for _, archivo := range archivos {
 		err := procArchivo(archivo, csvPath, exclUsrNull)
 		if err != nil {
-			printError(err)
+			logError(err)
 		}
 	}
 

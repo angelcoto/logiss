@@ -5,15 +5,10 @@ import (
 	"path/filepath"
 )
 
-// tranfAarchivos copia los archivos logs desde el directorio dirOrigen al directorio dirDestino.
-// Previo a la transferencia limpia el contenido del directorio temporal (dirDestino).
-func tranfArchivos(dirOrigen string, dirDestino string, archivos rangeFile) ([]string, error) {
-	/* 	err := borraTmp(dirDestino)
-	   	if err != nil {
-	   		return nil, err
-	   	}
-	*/
-	fmt.Printf("\n* ETAPA 1: actualizando directorio caché desde directorio origen %s\n", dirOrigen)
+// refreshCache actualiza los archivos logs desde el directorio origen al directorio caché.
+// Solo se actualizan los archivos que han cambiado en el directorio origen.
+func refreshCache(dirOrigen string, dirDestino string, archivos rangeFile) ([]string, error) {
+	logMensaje("Inicia actualización de directorio caché desde directorio origen")
 	var archivosListos []string
 	for _, archivo := range archivos {
 		fOri := filepath.Join(dirOrigen, archivo)
@@ -25,7 +20,7 @@ func tranfArchivos(dirOrigen string, dirDestino string, archivos rangeFile) ([]s
 				continue
 			} else {
 				if err := borraArchivo(fDes); err != nil {
-					printError(err)
+					logError(err)
 					continue
 				}
 			}
@@ -33,11 +28,11 @@ func tranfArchivos(dirOrigen string, dirDestino string, archivos rangeFile) ([]s
 
 		bWritten, err := cpFile(fDes, fOri)
 		if err != nil {
-			printError(err)
+			logError(err)
 			continue
 		}
 		archivosListos = append(archivosListos, fDes)
-		fmt.Println("Transferido:", fDes, "-", bWritten, "bytes")
+		logMensaje((fmt.Sprint("Actualizado: ", fDes, " - ", bWritten, "bytes")))
 
 	}
 

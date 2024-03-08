@@ -2,8 +2,8 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"io"
+	"log"
 	"os"
 	"time"
 )
@@ -11,8 +11,12 @@ import (
 // printError imprime en pantalla, en forma estandarizada, el mensaje de ero
 // r recibido como parámetro.
 // (util.go)
-func printError(err error) {
-	fmt.Println("* Error:", err)
+func logError(err error) {
+	log.Println("Error:", err)
+}
+
+func logMensaje(mensaje string) {
+	log.Println(mensaje)
 }
 
 // validaFecha verifica que el valor ingresado sea una fecha válida.

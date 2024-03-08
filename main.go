@@ -11,7 +11,7 @@ func main() {
 	// Carga parámetros de funcionamiento
 	conf, fecha, maxDias, err := loadParms()
 	if err != nil {
-		printError(err)
+		logError(err)
 		os.Exit(0)
 	}
 
@@ -19,18 +19,18 @@ func main() {
 
 	rangoArchivos := genRangoArchivos(fecha, maxDias)
 
-	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n", "v1.1.0")
+	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n\n", "v1.1.1")
 
-	archivos, err := tranfArchivos(conf.origen, conf.destino, rangoArchivos)
+	archivos, err := refreshCache(conf.origen, conf.destino, rangoArchivos)
 	if err != nil {
-		printError(err)
+		logError(err)
 		os.Exit(0)
 	}
 
 	if err := procArchivos(archivos, conf.csvPath, conf.exclUrsNull); err != nil {
-		printError(err)
+		logError(err)
 	}
 
-	fmt.Printf("\nFIN DE PROCESO: %v\n", time.Since(inicio))
+	logMensaje(fmt.Sprintf("Proceso finalizado en %v", time.Since(inicio)))
 
 }
