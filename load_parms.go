@@ -4,14 +4,21 @@ import (
 	"flag"
 	"time"
 
+	"github.com/angelcoto/logiss/util"
 	"github.com/spf13/viper"
 )
 
+type minutos uint16
+
+// cfg es la estructura para almacenar los valores definidos en
+// el archivo de configuración yaml.
+// (load_parms.go)
 type cfg struct {
 	origen      string
 	destino     string
 	csvPath     string
 	exclUrsNull bool
+	espera      minutos
 }
 
 // loadCfg obtiene parámetros de configuración desde el archivo conf.yaml.
@@ -30,36 +37,52 @@ func (c *cfg) loadCfg() error {
 	c.destino = viper.GetString("dirs.destino")
 	c.csvPath = viper.GetString("dirs.csv_path")
 	c.exclUrsNull = viper.GetBool("mode.excluir_usuarios_nulos")
+	c.espera = minutos(viper.GetUint16("mode.espera_ejecucion_continua"))
 
 	return nil
 }
 
-// loadParms obtiene parámetros de funcionamiento a través de flags de línea de comando.
-// Se hace llamado a loadCfg para obtener parámetros de funcionamiento
-// desde archivo de configuración "conf.yaml"
+// parametros es la estructura para almacenar todos los parámetros de
+// funcionamiento, los cuales están conformados por los ingresados por
+// línea de comando y por los contenidos en la estructura cfg.
 // (load_parms.go)
-func loadParms() (cfg, string, int, error) {
+type parametros struct {
+	fechaInicial string
+	dias         int
+	continuo     bool
+	yamlCfg      cfg
+}
+
+// loadParms llena los campos de la estructura parametros, lo cual incluye
+// los ingresados desde línea de comando y los definidos en el archivo
+// de configuración "conf.yaml"
+// (load_parms.go)
+func (p *parametros) loadParms() error {
 	ahora := time.Now().UTC()
 	fDefault := ahora.Format("060102")
 
 	fechaPtr := flag.String("f", fDefault, "Fecha del primer log a procesar (formato 'aammdd')")
 	maxDiasPtr := flag.Int("d", 0, "Cantidad de días a procesar desde la fecha definida")
+	modoContinuo := flag.Bool("c", false, "Ejecución contínua")
 
 	flag.Parse()
 
-	var c cfg
-
-	if err := c.loadCfg(); err != nil {
-		return cfg{}, "", 0, err
+	if err := p.yamlCfg.loadCfg(); err != nil {
+		return err
 	}
 
-	if err := validaFecha(*fechaPtr); err != nil {
-		return cfg{}, "", 0, err
+	p.continuo = *modoContinuo
+
+	if err := util.ValidaFecha(*fechaPtr); err != nil {
+		return err
 	}
+	p.fechaInicial = *fechaPtr
 
 	if *fechaPtr == fDefault {
-		*maxDiasPtr = 0
+		p.dias = 0
+	} else {
+		p.dias = *maxDiasPtr
 	}
 
-	return c, *fechaPtr, *maxDiasPtr, nil
+	return nil
 }

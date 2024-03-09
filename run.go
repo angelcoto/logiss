@@ -3,27 +3,48 @@ package main
 import (
 	"fmt"
 	"time"
+
+	"github.com/angelcoto/logiss/proc"
+	"github.com/angelcoto/logiss/util"
 )
 
-// runOnce ejecuta el proceso completo una vez.
-// (run.go)
-func runOnce(conf cfg, fecha string, maxDias int) error {
+func run(parms parametros) error {
 	inicio := time.Now()
-	rangoArchivos := genRangoArchivos(fecha, maxDias)
+	rangoArchivos := genRangoArchivos(parms.fechaInicial, parms.dias)
 
-	archivos, err := refreshCache(conf.origen, conf.destino, rangoArchivos)
+	archivos, err := refreshCache(parms.yamlCfg.origen, parms.yamlCfg.destino, rangoArchivos)
 	if err != nil {
-		logError(err)
+		util.LogError(err)
 		return err
 	}
 
-	if err := procArchivos(archivos, conf.csvPath, conf.exclUrsNull); err != nil {
-		logError(err)
+	if err := proc.ProcArchivos(archivos, parms.yamlCfg.csvPath, parms.yamlCfg.exclUrsNull); err != nil {
+		util.LogError(err)
 		return err
 	}
 
-	logMensaje(fmt.Sprintf("Proceso finalizado en %v", time.Since(inicio)))
+	util.LogMensaje(fmt.Sprintf("Proceso finalizado en %v", time.Since(inicio)))
 
 	return nil
 
+}
+
+// runOnce ejecuta el proceso una vez.
+// (run.go)
+func runOnce(parms parametros) error {
+	err := run(parms)
+	return err
+}
+
+// runForever ejecuta el proceso de forma infinita, teniendo un tiempo de espera
+// de n minutos entre cada ejecución.
+func runForever(parms parametros) error {
+	var err error
+	for {
+		if err = run(parms); err != nil {
+			break
+		}
+		time.Sleep(time.Minute * time.Duration(parms.yamlCfg.espera))
+	}
+	return err
 }

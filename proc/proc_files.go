@@ -1,4 +1,4 @@
-package main
+package proc
 
 import (
 	"bufio"
@@ -7,6 +7,8 @@ import (
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/angelcoto/logiss/util"
 )
 
 // rec define la estructura de la línea de log que interesa generar.  No está
@@ -61,7 +63,7 @@ func (entradas lineasLog) log2csv(csv string, exclUsrNull bool) (int, error) {
 	// Abre el archivo en modo append (agregar)
 	archivo, err := os.OpenFile(csv, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
-		logError(err)
+		util.LogError(err)
 		return 0, err
 	}
 	defer archivo.Close()
@@ -134,7 +136,7 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 
 		// se crea la línea de interés que será agregada al log de salida (logTransformado)
 		if err := linea.creaLinea(lineaPartida); err != nil {
-			logError(err)
+			util.LogError(err)
 			continue
 		}
 
@@ -146,22 +148,22 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 		return err
 	}
 
-	logMensaje(fmt.Sprint("Procesado: ", archivo, " - ", lineasInsertadas, " líneas en archivo CSV."))
+	util.LogMensaje(fmt.Sprint("Procesado: ", archivo, " - ", lineasInsertadas, " líneas en archivo CSV."))
 	return nil
 }
 
-// procArchivos invoca el procesamiento de cada uno de los archivos log listados
+// ProcArchivos invoca el procesamiento de cada uno de los archivos log listados
 // listados en la variable archivos.  Realiza una un backup del archivo csv y
 // coloca la línea de encabezado en el archivo.  Error es devuelto en caso que
 // el proceso no pueda realizarse.
 // (proc_files.go)
-func procArchivos(archivos rangeFile, csvPath string, exclUsrNull bool) error {
-	logMensaje("Inicia procesamiento de archivos en directorio cache")
+func ProcArchivos(archivos []string, csvPath string, exclUsrNull bool) error {
+	util.LogMensaje("Inicia procesamiento de archivos en directorio cache")
 
 	csvPathBk := csvPath + ".bak"
 
 	if err := os.Rename(csvPath, csvPathBk); err != nil {
-		logError(err)
+		util.LogError(err)
 	}
 
 	// Abre el archivo csv para agregar el encabezado
@@ -182,7 +184,7 @@ func procArchivos(archivos rangeFile, csvPath string, exclUsrNull bool) error {
 	for _, archivo := range archivos {
 		err := procArchivo(archivo, csvPath, exclUsrNull)
 		if err != nil {
-			logError(err)
+			util.LogError(err)
 		}
 	}
 

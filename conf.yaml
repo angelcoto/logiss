@@ -5,3 +5,4 @@ dirs:
 
 mode:
   excluir_usuarios_nulos: true
+  espera_ejecucion_continua: 

@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"errors"
@@ -8,21 +8,21 @@ import (
 	"time"
 )
 
-// printError imprime mensajes de error en forma de log.
+// PrintError imprime mensajes de error en forma de log.
 // (util.go)
-func logError(err error) {
+func LogError(err error) {
 	log.Println("Error:", err)
 }
 
-// logMensaje imprime mensajes informativos en forma de log
+// LogMensaje imprime mensajes informativos en forma de log
 // (util.go)
-func logMensaje(mensaje string) {
+func LogMensaje(mensaje string) {
 	log.Println(mensaje)
 }
 
-// validaFecha verifica que el valor ingresado sea una fecha válida.
+// ValidaFecha verifica que el valor ingresado sea una fecha válida.
 // (util.go)
-func validaFecha(sfecha string) error {
+func ValidaFecha(sfecha string) error {
 
 	fecha, err := time.Parse("060102", sfecha)
 	if err != nil {
@@ -37,10 +37,10 @@ func validaFecha(sfecha string) error {
 
 }
 
-// cpFile copia el archivo oriFileName en destFileName, devolviendo
+// CpFile copia el archivo oriFileName en destFileName, devolviendo
 // el número de bytes copiados y una variable de error.
 // (util.go)
-func cpFile(destFileName string, oriFileName string) (int64, error) {
+func CpFile(destFileName string, oriFileName string) (int64, error) {
 	oriFile, err := os.Open(oriFileName)
 	if err != nil {
 		return 0, err
@@ -63,9 +63,9 @@ func cpFile(destFileName string, oriFileName string) (int64, error) {
 	return bytesWritten, nil
 }
 
-// existeArchivo verifica si un archivo existe
+// ExisteArchivo verifica si un archivo existe
 // (util.go)
-func existeArchivo(path string) bool {
+func ExisteArchivo(path string) bool {
 	info, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		return false
@@ -73,9 +73,9 @@ func existeArchivo(path string) bool {
 	return !info.IsDir()
 }
 
-// tamanosIguales compara el tamaño de dos archivos y devuelve true en caso que los tamaños coincidan.
+// TamanosIguales compara el tamaño de dos archivos y devuelve true en caso que los tamaños coincidan.
 // (util.go)
-func tamanosIguales(f1, f2 string) (bool, error) {
+func TamanosIguales(f1, f2 string) (bool, error) {
 	infoOri, err := os.Stat(f1)
 	if err != nil {
 		return false, err
@@ -93,9 +93,9 @@ func tamanosIguales(f1, f2 string) (bool, error) {
 	return false, nil
 }
 
-// borraArchivo borra un archivo, devolviendo error en caso de falla.
+// BorraArchivo borra un archivo, devolviendo error en caso de falla.
 // (util.go)
-func borraArchivo(ruta string) error {
+func BorraArchivo(ruta string) error {
 	err := os.Remove(ruta)
 	if err != nil {
 		return err
