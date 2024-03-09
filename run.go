@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"runtime"
 	"time"
 
 	"github.com/angelcoto/logiss/proc"
@@ -46,11 +45,12 @@ func runForever(parms parametros) error {
 			break
 		}
 
-		// Se ejecuta Garbage Collector para liberar memoria luego del procesamiento
-		// de archivos, pues en función de la cantidad de archivos procesados la
-		// cantidad de memoria utilizada puede ser significativa.
-		runtime.GC()
-
+		/*
+			// Se ejecuta Garbage Collector para liberar memoria luego del procesamiento
+			// de archivos, pues en función de la cantidad de archivos procesados la
+			// cantidad de memoria utilizada puede ser significativa.
+			runtime.GC()
+		*/
 		time.Sleep(time.Minute * time.Duration(parms.yamlCfg.espera))
 	}
 	return err

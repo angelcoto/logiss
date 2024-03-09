@@ -78,8 +78,7 @@ func (entradas lineasLog) log2csv(csv string, exclUsrNull bool) (int, error) {
 			continue
 		}
 
-		linea := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-			entrada.fechaOri,
+		linea := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
 			entrada.fechaLoc,
 			entrada.metodo,
 			entrada.uriStem,
@@ -160,20 +159,21 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 func ProcArchivos(archivos []string, csvPath string, exclUsrNull bool) error {
 	util.LogMensaje("Inicia procesamiento de archivos en directorio cache")
 
-	csvPathBk := csvPath + ".bak"
+	/* 	csvPathBk := csvPath + ".bak"
 
-	if err := os.Rename(csvPath, csvPathBk); err != nil {
-		util.LogError(err)
-	}
+	   	if err := os.Rename(csvPath, csvPathBk); err != nil {
+	   		util.LogError(err)
+	   	}
+	*/
 
-	// Abre el archivo csv para agregar el encabezado
-	archivo, err := os.OpenFile(csvPath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	archivo, err := os.Create(csvPath)
 	if err != nil {
+		util.LogError(err)
 		return err
 	}
 
 	// Escribe el encabezado
-	encabezado := "fecha_ori,fecha,metodo,uri_stem,puerto,usuario,ip_c,referer,status,tiempo"
+	encabezado := "fecha,metodo,uri_stem,puerto,usuario,ip_c,referer,status,tiempo"
 	if _, err := archivo.WriteString(encabezado + "\n"); err != nil {
 		archivo.Close()
 		return err
