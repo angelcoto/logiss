@@ -4,12 +4,17 @@ import (
 	"fmt"
 	"os"
 
+	//	_ "net/http/pprof"
+
 	"github.com/angelcoto/logiss/util"
 )
 
 func main() {
-
-	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n\n", "v1.2.0")
+	/*
+		go func() {
+			http.ListenAndServe("localhost:6060", nil)
+		}()
+	*/fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n\n", "v1.2.1")
 
 	// Estructura con parámetros de funcionamiento
 	var parms parametros
