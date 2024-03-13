@@ -4,21 +4,22 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/angelcoto/logiss/parm"
 	"github.com/angelcoto/logiss/proc"
 	"github.com/angelcoto/logiss/util"
 )
 
-func run(parms parametros) error {
+func run(parms parm.Parametros) error {
 	inicio := time.Now()
-	rangoArchivos := genRangoArchivos(parms.fechaInicial, parms.dias)
+	rangoArchivos := genRangoArchivos(parms.FechaInicial, parms.Dias)
 
-	archivos, err := refreshCache(parms.yamlCfg.origen, parms.yamlCfg.destino, rangoArchivos)
+	archivos, err := refreshCache(parms.YamlCfg.Origen, parms.YamlCfg.Destino, rangoArchivos)
 	if err != nil {
 		util.LogError(err)
 		return err
 	}
 
-	if err := proc.ProcArchivos(archivos, parms.yamlCfg.csvPath, parms.yamlCfg.exclUrsNull); err != nil {
+	if err := proc.ProcArchivos(archivos, parms); err != nil {
 		util.LogError(err)
 		return err
 	}
@@ -31,14 +32,14 @@ func run(parms parametros) error {
 
 // runOnce ejecuta el proceso una vez.
 // (run.go)
-func runOnce(parms parametros) error {
+func runOnce(parms parm.Parametros) error {
 	err := run(parms)
 	return err
 }
 
 // runForever ejecuta el proceso de forma infinita, teniendo un tiempo de espera
 // de n minutos entre cada ejecución.
-func runForever(parms parametros) error {
+func runForever(parms parm.Parametros) error {
 	var err error
 	for {
 		if err = run(parms); err != nil {
@@ -51,7 +52,7 @@ func runForever(parms parametros) error {
 			// cantidad de memoria utilizada puede ser significativa.
 			runtime.GC()
 		*/
-		time.Sleep(time.Minute * time.Duration(parms.yamlCfg.espera))
+		time.Sleep(time.Minute * time.Duration(parms.YamlCfg.Espera))
 	}
 	return err
 }

@@ -4,5 +4,9 @@ dirs:
   csv_path: 
 
 mode:
-  excluir_usuarios_nulos: true
   espera_ejecucion_continua: 
+
+excl: 
+  excluir_usuarios_nulos: true
+  ip_excluidas: 
+  uri_excluidas:  

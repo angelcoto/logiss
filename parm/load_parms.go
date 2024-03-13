@@ -1,4 +1,4 @@
-package main
+package parm
 
 import (
 	"flag"
@@ -14,11 +14,13 @@ type minutos uint16
 // el archivo de configuración yaml.
 // (load_parms.go)
 type cfg struct {
-	origen      string
-	destino     string
-	csvPath     string
-	exclUrsNull bool
-	espera      minutos
+	Origen      string
+	Destino     string
+	CsvPath     string
+	Espera      minutos
+	ExclUrsNull bool
+	ExclIP      []string
+	ExclUri     []string
 }
 
 // loadCfg obtiene parámetros de configuración desde el archivo conf.yaml.
@@ -33,11 +35,13 @@ func (c *cfg) loadCfg() error {
 		return err
 	}
 
-	c.origen = viper.GetString("dirs.origen")
-	c.destino = viper.GetString("dirs.destino")
-	c.csvPath = viper.GetString("dirs.csv_path")
-	c.exclUrsNull = viper.GetBool("mode.excluir_usuarios_nulos")
-	c.espera = minutos(viper.GetUint16("mode.espera_ejecucion_continua"))
+	c.Origen = viper.GetString("dirs.origen")
+	c.Destino = viper.GetString("dirs.destino")
+	c.CsvPath = viper.GetString("dirs.csv_path")
+	c.Espera = minutos(viper.GetUint16("mode.espera_ejecucion_continua"))
+	c.ExclUrsNull = viper.GetBool("excl.excluir_usuarios_nulos")
+	c.ExclIP = viper.GetStringSlice("excl.ip_excluidas")
+	c.ExclUri = viper.GetStringSlice("excl.uri_excluidas")
 
 	return nil
 }
@@ -46,18 +50,18 @@ func (c *cfg) loadCfg() error {
 // funcionamiento, los cuales están conformados por los ingresados por
 // línea de comando y por los contenidos en la estructura cfg.
 // (load_parms.go)
-type parametros struct {
-	fechaInicial string
-	dias         int
-	continuo     bool
-	yamlCfg      cfg
+type Parametros struct {
+	FechaInicial string
+	Dias         int
+	Continuo     bool
+	YamlCfg      cfg
 }
 
 // loadParms llena los campos de la estructura parametros, lo cual incluye
 // los ingresados desde línea de comando y los definidos en el archivo
 // de configuración "conf.yaml"
 // (load_parms.go)
-func (p *parametros) loadParms() error {
+func (p *Parametros) LoadParms() error {
 	ahora := time.Now().UTC()
 	fDefault := ahora.Format("060102")
 
@@ -67,21 +71,21 @@ func (p *parametros) loadParms() error {
 
 	flag.Parse()
 
-	if err := p.yamlCfg.loadCfg(); err != nil {
+	if err := p.YamlCfg.loadCfg(); err != nil {
 		return err
 	}
 
-	p.continuo = *modoContinuo
+	p.Continuo = *modoContinuo
 
 	if err := util.ValidaFecha(*fechaPtr); err != nil {
 		return err
 	}
-	p.fechaInicial = *fechaPtr
+	p.FechaInicial = *fechaPtr
 
 	if *fechaPtr == fDefault {
-		p.dias = 0
+		p.Dias = 0
 	} else {
-		p.dias = *maxDiasPtr
+		p.Dias = *maxDiasPtr
 	}
 
 	return nil

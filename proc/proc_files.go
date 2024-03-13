@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/angelcoto/logiss/parm"
 	"github.com/angelcoto/logiss/util"
 )
 
@@ -81,10 +82,6 @@ func (entradas lineasLog) log2csv(csv string, exclUsrNull bool) (int, error) {
 			continue
 		}
 
-		if entrada.ipC == "192.168.28.30" {
-			continue
-		}
-
 		linea := fmt.Sprintf("%s,%s,%s,%s,%s,c: %s,%s,%s,%s\n",
 			entrada.fechaLoc,
 			entrada.metodo,
@@ -112,7 +109,7 @@ func (entradas lineasLog) log2csv(csv string, exclUsrNull bool) (int, error) {
 // las líneas que contienen uri_stem declarados en lista de exclusión.
 // Se devuelve error en caso que no se pueda procesar el archivo.
 // (proc_files.go)
-func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
+func procArchivo(archivo string, parms parm.Parametros) error {
 
 	f, err := os.Open(archivo)
 	if err != nil {
@@ -135,8 +132,13 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 			continue
 		}
 
-		exclusiones := []string{"/bundles/modernizr", "/Content/css", "/bundles/jquery", "/bundles/bootstrap"}
-		if slices.Contains(exclusiones, lineaPartida[4]) {
+		// Se excluyen las líneas de IP que no se quiere procesar
+		if slices.Contains(parms.YamlCfg.ExclIP, lineaPartida[8]) {
+			continue
+		}
+
+		// Se escluyen las líneas de las uri que no se quieren procesar
+		if slices.Contains(parms.YamlCfg.ExclUri, lineaPartida[4]) {
 			continue
 		}
 
@@ -149,7 +151,7 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 		logTransformado = append(logTransformado, linea)
 	}
 
-	lineasInsertadas, err := logTransformado.log2csv(csvPath, exclUsrNull)
+	lineasInsertadas, err := logTransformado.log2csv(parms.YamlCfg.CsvPath, parms.YamlCfg.ExclUrsNull)
 	if err != nil {
 		return err
 	}
@@ -163,7 +165,7 @@ func procArchivo(archivo, csvPath string, exclUsrNull bool) error {
 // coloca la línea de encabezado en el archivo.  Error es devuelto en caso que
 // el proceso no pueda realizarse.
 // (proc_files.go)
-func ProcArchivos(archivos []string, csvPath string, exclUsrNull bool) error {
+func ProcArchivos(archivos []string, parms parm.Parametros) error {
 	util.LogMensaje("Inicia procesamiento de archivos en directorio cache")
 
 	/* 	csvPathBk := csvPath + ".bak"
@@ -173,7 +175,7 @@ func ProcArchivos(archivos []string, csvPath string, exclUsrNull bool) error {
 	   	}
 	*/
 
-	archivo, err := os.Create(csvPath)
+	archivo, err := os.Create(parms.YamlCfg.CsvPath)
 	if err != nil {
 		util.LogError(err)
 		return err
@@ -189,7 +191,7 @@ func ProcArchivos(archivos []string, csvPath string, exclUsrNull bool) error {
 
 	// Procesa todos los archivos transferidos
 	for _, archivo := range archivos {
-		err := procArchivo(archivo, csvPath, exclUsrNull)
+		err := procArchivo(archivo, parms)
 		if err != nil {
 			util.LogError(err)
 		}

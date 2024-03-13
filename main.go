@@ -6,6 +6,7 @@ import (
 
 	//	_ "net/http/pprof"
 
+	"github.com/angelcoto/logiss/parm"
 	"github.com/angelcoto/logiss/util"
 )
 
@@ -15,19 +16,19 @@ func main() {
 			http.ListenAndServe("localhost:6060", nil)
 		}()
 	*/
-	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n\n", "v1.3.0")
+	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n\n", "v1.3.1")
 
 	// Estructura con parámetros de funcionamiento
-	var parms parametros
+	var parms parm.Parametros
 
 	// Carga parámetros
-	err := parms.loadParms()
+	err := parms.LoadParms()
 	if err != nil {
 		util.LogError(err)
 		os.Exit(0)
 	}
 
-	switch parms.continuo {
+	switch parms.Continuo {
 	case false:
 		if err := runOnce(parms); err != nil {
 			util.LogError(err)
