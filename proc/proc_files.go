@@ -55,6 +55,9 @@ func (r *rec) creaLinea(lineaPartida []string) error {
 
 type lineasLog []rec
 
+// Crea un cache para la indagación del DNS
+var cacheIP util.IPCache = make(util.IPCache)
+
 // log2csv agrega las entradas del archivo log al archivo csv.  Devuelve
 // la cantidad de líneas escritas y error en caso que no sea posible
 // escribir en el archivo.
@@ -78,13 +81,17 @@ func (entradas lineasLog) log2csv(csv string, exclUsrNull bool) (int, error) {
 			continue
 		}
 
-		linea := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+		if entrada.ipC == "192.168.28.30" {
+			continue
+		}
+
+		linea := fmt.Sprintf("%s,%s,%s,%s,%s,c: %s,%s,%s,%s\n",
 			entrada.fechaLoc,
 			entrada.metodo,
 			entrada.uriStem,
 			entrada.puerto,
 			entrada.usuario,
-			entrada.ipC,
+			util.Hostname(entrada.ipC, cacheIP),
 			entrada.referer,
 			entrada.status,
 			entrada.tiempo)
