@@ -16,31 +16,22 @@ func main() {
 			http.ListenAndServe("localhost:6060", nil)
 		}()
 	*/
-	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n\n", "v1.3.1")
+	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n\n", "v1.3.2")
 
 	// Estructura con parámetros de funcionamiento
 	var parms parm.Parametros
 
 	// Carga parámetros
-	err := parms.LoadParms()
-	if err != nil {
+	if err := parms.LoadParms(); err != nil {
 		util.LogError(err)
 		os.Exit(0)
 	}
 
 	switch parms.Continuo {
 	case false:
-		if err := runOnce(parms); err != nil {
-			util.LogError(err)
-			os.Exit(0)
-
-		}
+		runOnce(parms)
 	case true:
-		if err := runForever(parms); err != nil {
-			util.LogError(err)
-			os.Exit(0)
-
-		}
+		runForever(parms)
 	}
 
 }

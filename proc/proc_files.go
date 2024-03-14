@@ -39,7 +39,7 @@ func (r *rec) creaLinea(lineaPartida []string) error {
 	r.fechaOri = lineaPartida[0] + " " + lineaPartida[1]
 	fechaOri, err := time.Parse("2006-01-02 15:04:05", r.fechaOri)
 	if err != nil {
-		return err
+		return fmt.Errorf("no fue posible procesar supuesto campo de fecha %s en creaLinea: %v", r.fechaOri, err)
 	}
 	r.fechaLoc = fechaOri.Local().Format("2006-01-02 15:04:05")
 	r.metodo = lineaPartida[3]
@@ -67,8 +67,7 @@ func (entradas lineasLog) log2csv(csv string, exclUsrNull bool) (int, error) {
 	// Abre el archivo en modo append (agregar)
 	archivo, err := os.OpenFile(csv, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
-		util.LogError(err)
-		return 0, err
+		return 0, fmt.Errorf("no fue posible abrir archivo CSV en log2csv: %v", err)
 	}
 	defer archivo.Close()
 
@@ -95,7 +94,7 @@ func (entradas lineasLog) log2csv(csv string, exclUsrNull bool) (int, error) {
 
 		// Escribe línea en el buffer
 		if _, err := writer.WriteString(linea); err != nil {
-			return 0, err
+			return 0, fmt.Errorf("no fue posible escribir línea en archivo CSV en log2csv: %v", err)
 		}
 		contador++
 	}
@@ -113,7 +112,7 @@ func procArchivo(archivo string, parms parm.Parametros) error {
 
 	f, err := os.Open(archivo)
 	if err != nil {
-		return err
+		return fmt.Errorf("no fue posible abrir archivo log en procArchivo: %v", err)
 	}
 	defer f.Close()
 
@@ -168,24 +167,16 @@ func procArchivo(archivo string, parms parm.Parametros) error {
 func ProcArchivos(archivos []string, parms parm.Parametros) error {
 	util.LogMensaje("Inicia procesamiento de archivos en directorio cache")
 
-	/* 	csvPathBk := csvPath + ".bak"
-
-	   	if err := os.Rename(csvPath, csvPathBk); err != nil {
-	   		util.LogError(err)
-	   	}
-	*/
-
 	archivo, err := os.Create(parms.YamlCfg.CsvPath)
 	if err != nil {
-		util.LogError(err)
-		return err
+		return fmt.Errorf("no fue posible crear archivo CSV en ProcArchivos: %v", err)
 	}
 
 	// Escribe el encabezado
 	encabezado := "fecha,metodo,uri_stem,puerto,usuario,ip_c,referer,status,tiempo"
 	if _, err := archivo.WriteString(encabezado + "\n"); err != nil {
 		archivo.Close()
-		return err
+		return fmt.Errorf("no fue posible escribir encabezado en archivo CSV en ProcArchivos: %v", err)
 	}
 	archivo.Close()
 
