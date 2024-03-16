@@ -2,6 +2,8 @@ package parm
 
 import (
 	"flag"
+	"fmt"
+	"slices"
 	"time"
 
 	"github.com/angelcoto/logiss/util"
@@ -14,13 +16,14 @@ type minutos uint16
 // el archivo de configuración yaml.
 // (load_parms.go)
 type cfg struct {
-	Origen      string
-	Destino     string
-	CsvPath     string
-	Espera      minutos
-	ExclUrsNull bool
-	ExclIP      []string
-	ExclUri     []string
+	Origen       string
+	Destino      string
+	CsvPath      string
+	CsvSeparador string
+	Espera       minutos
+	ExclUrsNull  bool
+	ExclIP       []string
+	ExclUri      []string
 }
 
 // loadCfg obtiene parámetros de configuración desde el archivo conf.yaml.
@@ -42,6 +45,25 @@ func (c *cfg) loadCfg() error {
 	c.ExclUrsNull = viper.GetBool("excl.excluir_usuarios_nulos")
 	c.ExclIP = viper.GetStringSlice("excl.ip_excluidas")
 	c.ExclUri = viper.GetStringSlice("excl.uri_excluidas")
+	c.CsvSeparador = viper.GetString("csv.separador")
+
+	// Valida el separador definido en el yaml
+	if err := func() error {
+		var separadores = []string{"coma", "tab", ";", "|"}
+		if !slices.Contains(separadores, c.CsvSeparador) {
+			return (fmt.Errorf("el separador definido en archivo de configuración no es válido"))
+		}
+		return nil
+	}(); err != nil {
+		return err
+	}
+
+	switch c.CsvSeparador {
+	case "tab":
+		c.CsvSeparador = "\t"
+	case "coma":
+		c.CsvSeparador = ","
+	}
 
 	return nil
 }

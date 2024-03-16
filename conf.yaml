@@ -10,3 +10,7 @@ excl:
   excluir_usuarios_nulos: true
   ip_excluidas: 
   uri_excluidas:  
+
+csv:
+  # String válidos para definir separador: coma, tab, ";", "|"
+  separador: tab
