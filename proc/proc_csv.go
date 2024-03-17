@@ -44,7 +44,7 @@ func (entradas lineasLog) log2csv(csv, sep string, exclUsrNull bool) (int, error
 			util.Hostname(entrada.ipC, cacheIP), sep,
 			entrada.referer, sep,
 			entrada.status, sep,
-			entrada.tiempo)
+			entrada.tiempoRespSec)
 
 		// Escribe línea en el buffer
 		if _, err := writer.WriteString(linea); err != nil {

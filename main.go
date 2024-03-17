@@ -16,7 +16,7 @@ func main() {
 			http.ListenAndServe("localhost:6060", nil)
 		}()
 	*/
-	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n\n", "v1.4.0")
+	fmt.Printf("logiss %s.  Copyright (c) 2024 Ángel Coto.  MIT License.\n\n", "v1.4.1")
 
 	// Estructura con parámetros de funcionamiento
 	var parms parm.Parametros

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -18,16 +19,17 @@ import (
 // local), que no corresponde a ningún campo de log original.
 // (proc_files.go)
 type rec struct {
-	fechaOri string
-	fechaLoc string
-	metodo   string
-	uriStem  string
-	puerto   string
-	usuario  string
-	ipC      string
-	referer  string
-	status   string
-	tiempo   string
+	fechaOri      string
+	fechaLoc      string
+	metodo        string
+	uriStem       string
+	puerto        string
+	usuario       string
+	ipC           string
+	referer       string
+	status        string
+	tiempoResp    string
+	tiempoRespSec string
 }
 
 // creaLinea es un método asociado al tipo rec, que procesa la línea del
@@ -49,7 +51,13 @@ func (r *rec) creaLinea(lineaPartida []string) error {
 	r.ipC = lineaPartida[8]
 	r.referer = lineaPartida[10]
 	r.status = lineaPartida[11]
-	r.tiempo = lineaPartida[14]
+	r.tiempoResp = lineaPartida[14]
+
+	t, err := strconv.ParseFloat(r.tiempoResp, 64)
+	if err != nil {
+		return fmt.Errorf("no fue posible procesar tiempo de respuesta %s", r.tiempoResp)
+	}
+	r.tiempoRespSec = fmt.Sprintf("%.6f", t/1000.0)
 
 	return nil
 }
