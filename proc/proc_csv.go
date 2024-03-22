@@ -35,7 +35,7 @@ func (entradas lineasLog) log2csv(csv, sep string, exclUsrNull bool) (int, error
 			continue
 		}
 
-		linea := fmt.Sprintf("%s%s%s%s%s%s%s%s%s%sh: %s%s%s%s%s%s%s\n",
+		linea := fmt.Sprintf("%s%s%s%s%s%s%s%s%s%sh: %s%s%s%s%s%s%s%s%s%s%s%s%s\n",
 			entrada.fechaLoc, sep,
 			entrada.metodo, sep,
 			entrada.uriStem, sep,
@@ -44,7 +44,10 @@ func (entradas lineasLog) log2csv(csv, sep string, exclUsrNull bool) (int, error
 			util.Hostname(entrada.ipC, cacheIP), sep,
 			entrada.referer, sep,
 			entrada.status, sep,
-			entrada.tiempoRespSec)
+			entrada.tiempoRespSec, sep,
+			entrada.dia, sep,
+			entrada.hora, sep,
+			entrada.minuto)
 
 		// Escribe línea en el buffer
 		if _, err := writer.WriteString(linea); err != nil {

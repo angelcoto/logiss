@@ -13,6 +13,8 @@ import (
 	"github.com/angelcoto/logiss/util"
 )
 
+const formatoFecha string = "2006-01-02 15:04:05"
+
 // rec define la estructura de la línea de log que interesa generar.  No está
 // constituida por todas las líneas del log original, sino que solo las que se
 // consideran de interés.  En la estrucura se incorpora fechaLoc (fecha en hora
@@ -30,6 +32,9 @@ type rec struct {
 	status        string
 	tiempoResp    string
 	tiempoRespSec string
+	dia           string
+	hora          string
+	minuto        string
 }
 
 // creaLinea es un método asociado al tipo rec, que procesa la línea del
@@ -39,11 +44,11 @@ type rec struct {
 func (r *rec) creaLinea(lineaPartida []string) error {
 	// Selección de los campos que conforman la línea de log de salida
 	r.fechaOri = lineaPartida[0] + " " + lineaPartida[1]
-	fechaOri, err := time.Parse("2006-01-02 15:04:05", r.fechaOri)
+	fechaOri, err := time.Parse(formatoFecha, r.fechaOri)
 	if err != nil {
 		return fmt.Errorf("no fue posible procesar supuesto campo de fecha %s en creaLinea: %v", r.fechaOri, err)
 	}
-	r.fechaLoc = fechaOri.Local().Format("2006-01-02 15:04:05")
+	r.fechaLoc = fechaOri.Local().Format(formatoFecha)
 	r.metodo = lineaPartida[3]
 	r.uriStem = lineaPartida[4]
 	r.puerto = lineaPartida[6]
@@ -58,6 +63,11 @@ func (r *rec) creaLinea(lineaPartida []string) error {
 		return fmt.Errorf("no fue posible procesar tiempo de respuesta %s", r.tiempoResp)
 	}
 	r.tiempoRespSec = fmt.Sprintf("%.6f", t/1000.0)
+
+	fechaLoc, _ := time.Parse(formatoFecha, r.fechaLoc)
+	r.dia = fechaLoc.Format("01/02")
+	r.hora = fechaLoc.Format("15")
+	r.minuto = fechaLoc.Format("15:04")
 
 	return nil
 }

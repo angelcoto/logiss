@@ -22,7 +22,10 @@ func ProcArchivos(archivos []string, parms parm.Parametros) error {
 	}
 
 	// Escribe el encabezado
-	encabezado := fmt.Sprintf("fecha%smetodo%suri_stem%spuerto%susuario%sip_c%sreferer%sstatus%ssecs",
+	encabezado := fmt.Sprintf("fecha%smetodo%suri_stem%spuerto%susuario%sip_c%sreferer%sstatus%ssecs%sdia%shora%sminuto",
+		parms.YamlCfg.CsvSeparador,
+		parms.YamlCfg.CsvSeparador,
+		parms.YamlCfg.CsvSeparador,
 		parms.YamlCfg.CsvSeparador,
 		parms.YamlCfg.CsvSeparador,
 		parms.YamlCfg.CsvSeparador,
