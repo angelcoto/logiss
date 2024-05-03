@@ -18,6 +18,12 @@ func refreshCache(dirOrigen string, dirDestino string, archivos []string) ([]str
 		fDes := filepath.Join(dirDestino, archivo)
 
 		if util.ExisteArchivo(fDes) {
+			if !util.ExisteArchivo(fOri) {
+				util.LogError(fmt.Errorf("no se puede acceder archivo %s", fOri))
+				archivosListos = append(archivosListos, fDes)
+				continue
+			}
+
 			if iguales, _ := util.TamanosIguales(fOri, fDes); iguales {
 				archivosListos = append(archivosListos, fDes)
 				continue
